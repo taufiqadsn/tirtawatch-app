@@ -4,7 +4,7 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   previewFeatures = ["postgresqlExtensions"]
 }
 
@@ -21,6 +21,7 @@ model User {
   role ROLE @default(CITIZEN)
   reports Report[]
   created_at DateTime @default(now())
+  status_histories StatusHistory[]
 }
 
 model Report {
@@ -34,8 +35,23 @@ model Report {
   address_name String
   status Status @default(NEW)
   created_at DateTime @default(now())
+  status_histories StatusHistory[]
 
   reporter User @relation(fields: [reporter_id], references: [id])
+}
+
+model StatusHistory {
+  id              String   @id @default(uuid())
+  report_id       String
+  changed_by      String
+  old_status      Status
+  new_status      Status
+  remarks         String?  @db.Text
+  proof_photo_url String?
+  created_at      DateTime @default(now())
+
+  report          Report   @relation(fields: [report_id], references: [id])
+  technician      User     @relation(fields: [changed_by], references: [id])
 }
 
 enum ROLE {
