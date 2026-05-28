@@ -2,8 +2,6 @@
 
 import dynamic from "next/dynamic";
 
-// Leaflet butuh objek window milik browser, jadi peta tidak boleh dirender
-// di server. ssr: false memastikan peta hanya dimuat di sisi browser.
 const PublicMap = dynamic(() => import("./PublicMap"), {
   ssr: false,
   loading: () => (
