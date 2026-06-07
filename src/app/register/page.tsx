@@ -4,13 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
-// Pastikan Anda menyesuaikan path import Icon di bawah ini sesuai proyek Anda
 import { IconUser, IconGoogle } from "@/components/Icons";
+import { supabaseClient } from "@/lib/supabaseClient";
 
 export default function RegisterPage() {
   const router = useRouter();
 
-  // 1. Setup State untuk Form dan Status
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -21,13 +20,11 @@ export default function RegisterPage() {
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
 
-  // 2. Fungsi Eksekusi ke Backend
   const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault(); // Mencegah reload halaman
+    e.preventDefault();
     setErrorMsg("");
     setSuccessMsg("");
 
-    // Validasi Checkbox
     if (!agreeTerms) {
       setErrorMsg("Anda harus menyetujui Syarat & Ketentuan.");
       return;
@@ -36,28 +33,55 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+      const { data, error } = await supabaseClient.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            name: formData.name,
+          },
+        },
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Gagal mendaftar");
+      if (error) {
+        throw new Error(error.message);
       }
 
-      setSuccessMsg("Pendaftaran berhasil! Mengalihkan...");
-
-      // Redirect ke login setelah 2 detik
-      setTimeout(() => {
-        router.push("/login");
-      }, 2000);
+      if (data?.user && data?.session === null) {
+        setSuccessMsg(
+          "Pendaftaran berhasil! Silakan cek email Anda untuk verifikasi.",
+        );
+      } else {
+        setSuccessMsg("Pendaftaran berhasil! Mengalihkan ke halaman login...");
+        setTimeout(() => {
+          router.push("/login");
+        }, 2000);
+      }
     } catch (error: any) {
-      setErrorMsg(error.message || "Terjadi kesalahan server");
+      const message =
+        error.message === "User already registered"
+          ? "Email ini sudah terdaftar. Silakan masuk."
+          : error.message;
+
+      setErrorMsg(message || "Terjadi kesalahan server");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      setErrorMsg("");
+      const { error } = await supabaseClient.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+
+      if (error) throw error;
+    } catch (error: any) {
+      setErrorMsg(error.message || "Gagal menyambungkan ke Google");
     }
   };
 
@@ -89,21 +113,18 @@ export default function RegisterPage() {
             Daftar untuk mulai menggunakan TirtaWatch
           </p>
 
-          {/* Notifikasi Error (Desain Glassmorphism Transparan) */}
           {errorMsg && (
             <div className="mb-4 p-3 rounded-xl bg-red-500/20 border border-red-500/50 text-red-100 text-sm text-center backdrop-blur-sm">
               {errorMsg}
             </div>
           )}
 
-          {/* Notifikasi Sukses */}
           {successMsg && (
             <div className="mb-4 p-3 rounded-xl bg-green-500/20 border border-green-500/50 text-green-100 text-sm text-center backdrop-blur-sm">
               {successMsg}
             </div>
           )}
 
-          {/* BUNGKUS DENGAN FORM UNTUK ONSUBMIT */}
           <form onSubmit={handleRegister} className="space-y-3.5">
             <div>
               <label className="text-sm font-semibold">Nama Lengkap</label>
@@ -183,9 +204,9 @@ export default function RegisterPage() {
               <span className="h-px flex-1 bg-white/30" />
             </div>
 
-            {/* Tombol Google OAuth (Jika Nanti Diperlukan) */}
             <button
               type="button"
+              onClick={handleGoogleLogin}
               className="w-full rounded-xl bg-[#0f172a]/80 hover:bg-[#0f172a] py-3 font-semibold flex items-center justify-center gap-2 transition active:scale-[0.98] border border-white/10"
             >
               <IconGoogle className="w-5 h-5" /> Lanjut dengan Google

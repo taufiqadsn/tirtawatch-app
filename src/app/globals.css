@@ -19,6 +19,91 @@ body {
     sans-serif;
 }
 
+@theme {
+  /* --- WARNA --- */
+  --color-navy: #1F396D;
+  --color-navy-deep: #0F172A;
+  --color-navy-700: #172033;
+
+  --color-sky-50: #F0F9FF;
+  --color-sky-100: #E0F2FE;
+  --color-sky-200: #BAE6FD;
+  --color-sky-400: #38BDF8;
+  --color-sky-500: #0EA5E9;
+  --color-sky-600: #0284C7;
+  --color-sky-700: #0369A1;
+
+  --color-teal-500: #224B5F;
+
+  --color-ink: #0F172A;
+  --color-ink-soft: #334155;
+  --color-ink-mute: #64748B;
+  --color-ink-faint: #94A3B8;
+
+  --color-line: #E2E8F0;
+
+  --color-ok-bg: #DCFCE7;
+  --color-ok-text: #166534;
+  --color-ok-dot: #22C55E;
+
+  --color-warn-bg: #FEF3C7;
+  --color-warn-text: #92400E;
+  --color-warn-dot: #F59E0B;
+
+  --color-danger-bg: #FEE2E2;
+  --color-danger-text: #B91C1C;
+  --color-danger-dot: #EF4444;
+
+  /* --- TIPOGRAFI --- */
+  --font-sans: var(--font-jakarta), system-ui, sans-serif;
+
+  /* --- BAYANGAN (BOX SHADOW) --- */
+  --shadow-card: 0 12px 28px -12px rgba(15, 23, 42, 0.12);
+  --shadow-soft: 0 8px 20px rgba(15, 23, 42, 0.08);
+  --shadow-lift: 0 18px 40px -12px rgba(15, 23, 42, 0.18);
+  --shadow-glow: 0 10px 30px -8px rgba(14, 165, 233, 0.45);
+
+  /* --- LENGKUNGAN (BORDER RADIUS) --- */
+  --radius-3xl: 1.5rem;
+  --radius-4xl: 2rem;
+
+  /* --- ANIMASI --- */
+  --animate-fadeUp: fadeUp .6s ease forwards;
+  --animate-floaty: floaty 4s ease-in-out infinite;
+
+  /* --- KEYFRAMES --- */
+  @keyframes fadeUp {
+    0% {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes ripple {
+    0% {
+      transform: scale(0.8);
+      opacity: 0.6;
+    }
+    100% {
+      transform: scale(2.4);
+      opacity: 0;
+    }
+  }
+
+  @keyframes floaty {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;

@@ -20,7 +20,6 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-      // 1. Tembak ke API backend yang sudah Anda buat
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -29,28 +28,23 @@ export default function AdminLoginPage() {
 
       const data = await response.json();
 
-      // 2. Tangani jika login gagal (email/password salah)
       if (!response.ok) {
         throw new Error(
           data.error || data.message || "Email atau password salah.",
         );
       }
 
-      // 3. Validasi Role Admin dari response backend
-      // Sesuaikan "data.user.role" dengan struktur JSON yang dikembalikan oleh login/route.ts Anda
       const userRole = data.user?.role || data.role;
 
       if (userRole !== "ADMIN" && userRole !== "PETUGAS") {
-        // Jika yang login warga biasa, panggil API logout untuk menghapus cookie JWT yang telanjur dibuat
         await fetch("/api/auth/logout", { method: "POST" });
         throw new Error(
           "Akses Ditolak: Kredensial ini tidak memiliki izin sebagai Petugas/Admin.",
         );
       }
 
-      // 4. Sukses! Alihkan ke Dashboard
       router.push("/admin");
-      router.refresh(); // Memaksa layout membaca cookie terbaru
+      router.refresh(); 
     } catch (error) {
       setErrorMsg(error.message);
     } finally {
@@ -109,7 +103,6 @@ export default function AdminLoginPage() {
             Gunakan kredensial instansi yang terdaftar.
           </p>
 
-          {/* Notifikasi Error */}
           {errorMsg && (
             <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm">
               {errorMsg}
