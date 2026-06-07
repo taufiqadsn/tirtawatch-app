@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import ReportMap from "@/components/ReportMap";
 // import { mapPoints } from "@/lib/data";
 import { IconChevron } from "@/components/Icons";
-import React from "react";
+import React, { useState } from "react";
 import dynamic from "next/dynamic";
 
 const LandingMap = dynamic(() => import("@/components/LandingMap"), {
@@ -299,8 +299,7 @@ function Testimonials() {
 }
 
 function FAQ() {
-  const [openIndex, setOpenIndex] = React.useState(null);
-
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
   return (
     <section id="faq" className="px-5 pb-24 lg:px-8">
       <div className="mx-auto max-w-7xl">
