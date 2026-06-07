@@ -5,7 +5,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import dynamic from "next/dynamic";
-import { mapPoints } from "@/lib/data";
+// import { getMapPoints } from "@/lib/data";
 import { IconChevron } from "@/components/icons";
 import { useAuth } from "@/lib/auth";
 
