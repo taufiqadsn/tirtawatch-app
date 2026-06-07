@@ -61,7 +61,7 @@ export default function MultiStepReportForm() {
 
       // 4. Lanjutkan menyimpan data teks ke database menggunakan Server Action utama
       startTransition(() => {
-        formAction(formData);
+        (formAction as (payload: FormData) => void)(formData);
       });
     } catch (error) {
       console.error("Upload error:", error);
