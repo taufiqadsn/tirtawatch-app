@@ -51,7 +51,7 @@ export async function POST(request: Request) {
     const response = NextResponse.json(
       {
         message: "Login berhasil",
-        user: { id: user.id, name: user.name, role: user.role },
+        user: { id: user.id, name: user.full_name, role: user.role },
       },
       { status: 200 },
     );
