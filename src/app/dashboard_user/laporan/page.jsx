@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import StatusBadge from "@/components/StatusBadge";
 import { getReport, statusMeta } from "@/lib/data";
-import { IconBack, IconCamera } from "@/components/icons";
+import { IconBack, IconCamera } from "@/components/Icons";
 
 export function generateMetadata({ params }) {
   return { title: `Laporan #${params.id} — TirtaWatch` };
