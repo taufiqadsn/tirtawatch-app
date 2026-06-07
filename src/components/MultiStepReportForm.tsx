@@ -28,7 +28,7 @@ export default function MultiStepReportForm() {
       setImagePreview(URL.createObjectURL(file));
     }
   };
-  const handleCustomSubmit = async (formData) => {
+  const handleCustomSubmit = async (formData: FormData) => {
     setIsUploading(true);
 
     try {
