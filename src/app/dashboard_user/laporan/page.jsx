@@ -3,7 +3,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import StatusBadge from "@/components/StatusBadge";
-import { getReport, statusMeta } from "@/lib/data";
+import { statusMeta } from "@/lib/data";
 import { IconBack, IconCamera } from "@/components/Icons";
 
 export function generateMetadata({ params }) {
@@ -18,7 +18,7 @@ const TIMELINE = [
 const ORDER = ["baru", "proses", "selesai"];
 
 export default function DetailLaporanPage({ params }) {
-  const report = getReport(params.id);
+  // const report = getReport(params.id);
   const currentIdx = ORDER.indexOf(report.status);
 
   return (
