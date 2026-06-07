@@ -99,7 +99,7 @@ const faqs = [
   },
 ];
 
-function AnimatedCounter({ target, duration = 2000 }) {
+function AnimatedCounter({ target, duration = 2000 }: { target: number; duration: number }) {
   const [count, setCount] = React.useState(0);
   const ref = React.useRef(null);
 
