@@ -33,7 +33,7 @@ export default function MultiStepReportForm() {
 
     try {
       const imageFile = formData.get("image");
-      if (imageFile) {
+      if (imageFile instanceof File && imageFile.size > 0) {
         // 1. Minta Presigned URL dari server action
         const { signedUrl, filePath } = await getPresignedUrl(imageFile.name);
 
