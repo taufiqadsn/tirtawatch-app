@@ -1,265 +1,432 @@
-import MapWrapper from "@/components/MapWrapper";
+"use client";
+
 import Link from "next/link";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import ReportMap from "@/components/ReportMap";
+// import { mapPoints } from "@/lib/data";
+import { IconChevron } from "@/components/Icons";
+import React from "react";
+import dynamic from "next/dynamic";
 
-export default function Home() {
+const LandingMap = dynamic(() => import("@/components/LandingMap"), {
+  ssr: false,
+});
+
+const GOOGLE_MAPS_URL =
+  "https://www.google.com/maps/search/?api=1&query=Depok,Jawa+Barat";
+
+const problemCards = [
+  {
+    title: "Kerusakan Infrastruktur (Pipa & Meteran)",
+    img: "/pipa-bocor.jpg",
+    desc: "Pipa saluran utama bocor hingga menggenangi jalan raya? Atau meteran air di fasilitas umum rusak? Laporkan segera agar tim teknisi bisa mencegah pemborosan air bersih dan kerusakan jalan.",
+  },
+  {
+    title: "Penurunan Kualitas Air",
+    img: "/air-kotor.jpg",
+    desc: "Hak Anda adalah mendapatkan air yang layak. Laporkan jika air yang mengalir ke rumah atau lingkungan Anda mendadak keruh, berwarna kuning/cokelat, berbau tajam, atau terindikasi tercemar.",
+  },
+  {
+    title: "Gangguan Distribusi & Air Mati",
+    img: "/keran-mati.jpg",
+    desc: "Air mati total berhari-hari tanpa pemberitahuan resmi? Atau debit air mendadak mengecil drastis? Laporkan titik lokasinya agar petugas bisa melacak pusat penyumbatan atau gangguan pompanya.",
+  },
+];
+
+const steps = [
+  {
+    n: "1",
+    title: "Ambil Foto Kerusakan",
+    desc: "Jepret bukti permasalahan air seperti pipa bocor hingga masalah air bersih.",
+  },
+  {
+    n: "2",
+    title: "Pin Lokasi Otomatis",
+    desc: "Sistem mengunci koordinat GPS kamu, tambahkan deskripsi singkat kepada teknisi.",
+  },
+  {
+    n: "3",
+    title: "Laporan Terkirim",
+    desc: "Sekali klik kirim, laporanmu langsung terhubung ke instansi terkait dan muncul di peta laporan publik.",
+  },
+  {
+    n: "4",
+    title: "Pantau Hingga Tuntas",
+    desc: "Pantau progres laporan kamu dari dashboard. Dapatkan pembaruan terkait progres masalah.",
+  },
+];
+
+const testimonials = [
+  {
+    name: "Budi Suryano",
+    img: "/budi-suryano.jpg",
+    text: "Awalnya saya coba-coba, tapi ternyata cepat banget penanganannya. Pipa bocor di depan gang langsung ditangani kurang dari 24 jam setelah lapor. Salut buat transparansinya.",
+  },
+  {
+    name: "Dimas Pramudya",
+    img: "/dimas-pramudya.jpg",
+    text: "Fitur upvote ngebantu banget! Kemarin pipa utama di daerah Margonda pecah, banyak warga yang langsung dukung laporannya, jadi cepat masuk prioritas perbaikan.",
+  },
+  {
+    name: "Nisa Ahmad",
+    img: "/nisa-ahmad.jpg",
+    text: "Aplikasinya familiar banget dipakai. Tinggal jepret foto, titik GPS otomatis kunci lokasi, kelar deh. Nggak ribet ngisi form panjang-panjang.",
+  },
+  {
+    name: "Ratna Sarumpaet",
+    img: "/ratna-sarumpaet.jpg",
+    text: "Suka banget bisa mantau status laporan dari HP. Jadi tahu kalau teknisi udah jalan ke lokasi. Nggak kerasa digantungin kayak sistem pelaporan zaman dulu.",
+  },
+];
+
+const faqs = [
+  {
+    q: "Apa yang Harus Saya Laporkan?",
+    a: "Laporkan masalah air bersih seperti pipa bocor, air keruh, air berbau, meteran rusak, debit air mengecil, atau air mati di lingkungan sekitar.",
+  },
+  {
+    q: "Berapa Lama Laporan Saya akan Diproses?",
+    a: "Laporan akan langsung masuk ke sistem setelah dikirim. Waktu proses bergantung pada tingkat urgensi, lokasi, dan antrean penanganan dari pihak terkait.",
+  },
+  {
+    q: "Bagaimana Cara Mengetahui Status Laporan Saya?",
+    a: "Status laporan bisa dipantau melalui halaman Peta Laporan atau dashboard laporan. Setiap laporan memiliki status seperti baru, ditangani, dan selesai.",
+  },
+  {
+    q: "Apakah Data Lokasi Saya Aman?",
+    a: "Lokasi digunakan untuk membantu petugas menemukan titik masalah. Data ditampilkan seperlunya agar laporan bisa diproses secara transparan.",
+  },
+];
+
+function AnimatedCounter({ target, duration = 2000 }) {
+  const [count, setCount] = React.useState(0);
+  const ref = React.useRef(null);
+
+  React.useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        obs.disconnect();
+        let start = 0;
+        const step = Math.ceil(target / (duration / 16));
+        const timer = setInterval(() => {
+          start += step;
+          if (start >= target) {
+            setCount(target);
+            clearInterval(timer);
+          } else setCount(start);
+        }, 16);
+      },
+      { threshold: 0.5 },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [target, duration]);
+
+  return <span ref={ref}>{count.toLocaleString("id-ID")}</span>;
+}
+
+function PublicMapCard() {
   return (
-    <div className="min-h-screen bg-white font-sans text-gray-800">
-      {/* Navbar */}
-      <nav className="fixed w-full bg-white/80 backdrop-blur-md z-50 border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex-shrink-0 flex items-center gap-2">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <svg
-                  className="w-5 h-5 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-                  />
-                </svg>
-              </div>
-              <span className="font-bold text-xl text-gray-900 tracking-tight">
-                Tirta<span className="text-blue-600">Watch</span>
-              </span>
-            </div>
-            <div className="flex gap-4 items-center">
-              <Link
-                href="/api/auth/signin"
-                className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors"
-              >
-                Masuk Petugas
-              </Link>
-              <Link
-                href="/report"
-                className="hidden md:inline-flex px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
-              >
-                Lapor Sekarang
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+    <div className="w-full rounded-[28px] bg-sky-50 p-4 shadow-card sm:p-6">
+      <div className="relative overflow-hidden rounded-[22px] bg-sky-100">
+        <LandingMap
+          // points={mapPoints}
+          className="h-[240px] sm:h-[320px] lg:h-[350px]"
+        />
+        <a
+          href={GOOGLE_MAPS_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Buka peta TirtaWatch di Google Maps"
+          className="absolute inset-0 z-10 flex items-center justify-center bg-black/0 opacity-0 transition hover:bg-black/20 hover:opacity-100"
+        >
+          <span className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-ink shadow-soft">
+            Buka di Google Maps
+          </span>
+        </a>
+      </div>
 
-      {/* Hero Section */}
-      <main className="pt-28 pb-16 sm:pt-32 sm:pb-24 lg:pb-32 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="text-center max-w-3xl mx-auto">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-900 mb-6">
-              Pantau dan Rawat <br className="hidden sm:block" />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">
-                Infrastruktur Air Kita
-              </span>
-            </h1>
-            <p className="text-lg sm:text-xl text-gray-500 mb-8">
-              Melihat pipa bocor atau aliran air mampet di sekitar Anda?
-              Laporkan dalam hitungan detik. Bersama kita wujudkan distribusi
-              air bersih yang responsif dan transparan.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/report"
-                className="px-8 py-4 text-base font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-500/30"
-              >
-                Buat Laporan Baru
-              </Link>
-              <Link
-                href="#cara-kerja"
-                className="px-8 py-4 text-base font-bold text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-all"
-              >
-                Cara Kerja
-              </Link>
+      <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-wrap items-center gap-3 text-xs text-ink-soft"></div>
+
+        <Link
+          href="/peta"
+          className="inline-flex h-[50px] items-center justify-center rounded-2xl bg-sky-500 px-7 text-sm font-semibold text-white shadow-soft transition hover:bg-sky-600"
+        >
+          Lihat Peta Laporan
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function ProblemCards() {
+  return (
+    <section className="relative z-10 -mt-14 px-5 lg:px-8">
+      <style>{`
+        @keyframes floatUp {
+          from { opacity: 0; transform: translateY(60px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .card-hidden { opacity: 0; transform: translateY(60px); }
+        .card-visible { animation: floatUp 0.6s ease forwards; }
+      `}</style>
+
+      <div className="mx-auto grid max-w-7xl gap-7 md:grid-cols-3">
+        {problemCards.map((card, i) => (
+          <article
+            key={card.title}
+            className="card-hidden h-full overflow-hidden rounded-[22px] bg-[#D8E9F4] shadow-[0_20px_50px_rgba(0,0,0,0.35)]"
+            style={{ animationDelay: `${i * 0.15}s` }}
+            ref={(el) => {
+              if (!el) return;
+              setTimeout(() => {
+                const obs = new IntersectionObserver(
+                  ([entry]) => {
+                    if (entry.isIntersecting) {
+                      el.classList.remove("card-hidden");
+                      el.classList.add("card-visible");
+                      obs.disconnect();
+                    }
+                  },
+                  { threshold: 0.15 },
+                );
+                obs.observe(el);
+              }, 100);
+            }}
+          >
+            <div className="relative h-[260px] overflow-hidden">
+              <img
+                src={card.img}
+                alt={card.title}
+                className="h-full w-full object-cover"
+              />
             </div>
-          </div>
+
+            <div className="px-6 pb-8 pt-5">
+              <h3 className="text-[26px] font-semibold leading-[1.05] text-ink">
+                {card.title}
+              </h3>
+              <p className="mt-4 text-sm leading-[17px] text-ink-mute">
+                {card.desc}
+              </p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function HowItWorks() {
+  return (
+    <section id="cara-kerja" className="px-5 py-20 lg:px-8">
+      <div className="mx-auto max-w-7xl">
+        <h2 className="text-3xl font-bold leading-tight text-ink lg:text-4xl lg:leading-[50px]">
+          Cara Kerja TirtaWatch
+        </h2>
+
+        <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {steps.map((step) => (
+            <article
+              key={step.n}
+              className="min-h-[150px] rounded-[20px] border border-line bg-white p-6 shadow-[0_8px_30px_rgba(0,0,0,0.12)] hover:shadow-[0_16px_40px_rgba(0,0,0,0.18)] hover:-translate-y-1 transition-all duration-300"
+            >
+              <div className="flex gap-4">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#A9B9C9] text-[26px] font-bold leading-none text-sky-50 shadow-sm">
+                  {step.n}
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-semibold leading-[23px] text-ink">
+                    {step.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-[17px] text-ink-mute">
+                    {step.desc}
+                  </p>
+                </div>
+              </div>
+            </article>
+          ))}
         </div>
+      </div>
+    </section>
+  );
+}
+
+function UserIcon({ img, name }) {
+  return (
+    <div className="flex h-[86px] w-[86px] shrink-0 overflow-hidden rounded-full border border-black sm:h-[102px] sm:w-[102px]">
+      <img src={img} alt={name} className="h-full w-full object-cover" />
+    </div>
+  );
+}
+
+function Testimonials() {
+  return (
+    <section className="px-5 pb-20 lg:px-8">
+      <div className="mx-auto max-w-7xl">
+        <h2 className="text-3xl font-bold leading-tight text-ink lg:text-4xl lg:leading-[50px]">
+          Testimoni
+        </h2>
+
+        <div className="mt-9 grid gap-8 lg:grid-cols-2">
+          {testimonials.map((item) => (
+            <article
+              key={item.name}
+              className="flex min-h-[285px] flex-col gap-6 rounded-[22px] bg-white p-7 shadow-[0_12px_28px_rgba(0,0,0,0.25)] sm:flex-row sm:gap-8 sm:p-8"
+            >
+              <UserIcon img={item.img} name={item.name} />
+
+              <div className="sm:pt-5">
+                <h3 className="text-2xl font-bold leading-tight text-ink sm:text-[30px] sm:leading-[41px]">
+                  {item.name}
+                </h3>
+                <p className="mt-5 text-base leading-7 text-ink-mute sm:text-lg sm:leading-[26px]">
+                  “{item.text}”
+                </p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FAQ() {
+  const [openIndex, setOpenIndex] = React.useState(null);
+
+  return (
+    <section id="faq" className="px-5 pb-24 lg:px-8">
+      <div className="mx-auto max-w-7xl">
+        <h2 className="text-3xl font-bold leading-tight text-ink lg:text-4xl lg:leading-[50px]">
+          FAQ
+        </h2>
+
+        <div className="mt-10 space-y-6 lg:mt-14 lg:space-y-[66px]">
+          {faqs.map((item, i) => {
+            const isOpen = openIndex === i;
+            return (
+              <div
+                key={item.q}
+                className="overflow-hidden rounded-[22px] bg-sky-100 shadow-[0_12px_28px_rgba(0,0,0,0.25)]"
+              >
+                <button
+                  onClick={() => setOpenIndex(isOpen ? null : i)}
+                  className="flex w-full min-h-[82px] cursor-pointer items-center justify-between gap-6 px-6 py-4 text-xl font-bold leading-tight text-ink sm:min-h-[99px] sm:px-9 lg:text-4xl lg:leading-[50px]"
+                >
+                  <span className="text-left">{item.q}</span>
+                  <IconChevron
+                    className={`h-8 w-8 shrink-0 text-ink transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+                  />
+                </button>
+
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateRows: isOpen ? "1fr" : "0fr",
+                    transition: "grid-template-rows 0.35s ease",
+                  }}
+                >
+                  <div className="overflow-hidden">
+                    <p className="px-6 pb-8 text-base leading-7 text-ink-mute sm:px-9 sm:text-lg">
+                      {item.a}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default function LandingPage() {
+  return (
+    <>
+      <Navbar />
+
+      <main className="bg-white text-ink">
+        {/* HERO */}
+        <section
+          className="relative overflow-hidden text-white"
+          style={{
+            backgroundImage: "url('/foto-bg-dashboard.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        >
+          <div className="absolute inset-0 opacity-30">
+            <div className="absolute left-[-80px] top-[-80px] h-80 w-80 rounded-full bg-sky-400 blur-3xl" />
+            <div className="absolute bottom-[-120px] right-[-80px] h-96 w-96 rounded-full bg-sky-600 blur-3xl" />
+          </div>
+
+          <div className="relative mx-auto grid min-h-[721px] max-w-7xl items-start gap-10 px-5 py-16 lg:grid-cols-[1fr_557px] lg:px-8 lg:py-20 lg:items-center">
+            <div>
+              <h1 className="max-w-[650px] text-[40px] font-bold leading-none text-sky-50 drop-shadow-md sm:text-[50px]">
+                Laporkan masalah air di sekitarmu dengan cepat.
+              </h1>
+
+              <p className="mt-8 max-w-[598px] text-lg font-bold leading-[26px] text-sky-50 drop-shadow-md sm:text-xl">
+                Foto masalah, izinkan lokasi, kirim laporan, lalu pantau status
+                penanganannya secara transparan dari dashboard publik.
+              </p>
+
+              <Link
+                href="/login"
+                className="mt-8 inline-flex h-[51px] w-[275px] items-center justify-center rounded-2xl bg-[#224B5F] text-xl font-semibold text-white shadow-md transition hover:brightness-110"
+              >
+                Gabung Sekarang
+              </Link>
+
+              <div className="mt-12 flex flex-wrap gap-10 text-sky-50 lg:gap-12">
+                <div>
+                  <div className="text-[50px] font-bold ...">
+                    <AnimatedCounter target={1284} />
+                  </div>
+                  <p className="mt-3 text-lg font-bold leading-[26px]">
+                    Laporan masalah
+                  </p>
+                </div>
+
+                <div>
+                  <div className="text-[50px] font-bold ...">
+                    <AnimatedCounter target={892} />
+                  </div>
+                  <p className="mt-3 text-lg font-bold leading-[26px]">
+                    Sudah selesai
+                  </p>
+                </div>
+
+                <div>
+                  <div className="text-[50px] font-bold ...">
+                    <AnimatedCounter target={72} />%
+                  </div>
+                  <p className="mt-3 text-lg font-bold leading-[26px]">
+                    tingkat resolusi
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <PublicMapCard />
+          </div>
+        </section>
+
+        <ProblemCards />
+        <HowItWorks />
+        <Testimonials />
+        <FAQ />
       </main>
 
-      {/* PETA PUBLIK SECTION */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
-            <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                Pantauan Infrastruktur Live
-              </h2>
-              <p className="text-gray-500">
-                Lihat titik-titik laporan kerusakan dan perbaikan yang telah
-                diselesaikan di sekitar Anda.
-              </p>
-            </div>
-            <div className="flex gap-4 items-center bg-gray-50 p-3 rounded-lg border border-gray-100">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse"></div>
-                <span className="text-sm text-gray-600 font-medium">
-                  Perlu Tindakan
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-green-500 border border-green-600"></div>
-                <span className="text-sm text-gray-600 font-medium">
-                  Sudah Diperbaiki
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Container Peta */}
-          <div className="w-full h-[500px] md:h-[600px] rounded-2xl overflow-hidden shadow-lg border border-gray-200 relative z-0">
-            <MapWrapper />
-          </div>
-        </div>
-      </section>
-
-      {/* Statistik Cepat */}
-      <section className="bg-blue-600 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-x divide-blue-500/50">
-            <div>
-              <div className="text-3xl font-bold text-white mb-1">2.4k+</div>
-              <div className="text-blue-200 text-sm">Laporan Selesai</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-white mb-1">15 Menit</div>
-              <div className="text-blue-200 text-sm">Rata-rata Respon</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-white mb-1">98%</div>
-              <div className="text-blue-200 text-sm">Tingkat Kepuasan</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-white mb-1">24/7</div>
-              <div className="text-blue-200 text-sm">Tim Siaga</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Cara Kerja Section */}
-      <section id="cara-kerja" className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Bagaimana TirtaWatch Bekerja?
-            </h2>
-            <p className="text-gray-500 max-w-2xl mx-auto">
-              Sistem pelaporan kami dirancang sesederhana mungkin agar setiap
-              warga dapat berkontribusi tanpa kesulitan teknis.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Step 1 */}
-            <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 relative">
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-6">
-                <svg
-                  className="w-6 h-6 text-blue-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">
-                1. Ambil Foto
-              </h3>
-              <p className="text-gray-500 text-sm leading-relaxed">
-                Temukan kebocoran atau masalah air? Ambil foto langsung dari
-                lokasi kejadian menggunakan smartphone Anda.
-              </p>
-            </div>
-
-            {/* Step 2 */}
-            <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 relative">
-              <div className="w-12 h-12 bg-cyan-100 rounded-xl flex items-center justify-center mb-6">
-                <svg
-                  className="w-6 h-6 text-cyan-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">
-                2. Lacak Otomatis
-              </h3>
-              <p className="text-gray-500 text-sm leading-relaxed">
-                Sistem kami akan mendeteksi titik koordinat GPS Anda secara
-                presisi agar teknisi tahu persis ke mana harus pergi.
-              </p>
-            </div>
-
-            {/* Step 3 */}
-            <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 relative">
-              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-6">
-                <svg
-                  className="w-6 h-6 text-green-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">
-                3. Pantau Progres
-              </h3>
-              <p className="text-gray-500 text-sm leading-relaxed">
-                Dapatkan pembaruan langsung dari teknisi di lapangan hingga
-                masalah benar-benar terselesaikan.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 py-12 border-t border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-xl text-white tracking-tight">
-              Tirta<span className="text-blue-500">Watch</span>
-            </span>
-          </div>
-          <p className="text-gray-400 text-sm text-center md:text-left">
-            © {new Date().getFullYear()} TirtaWatch System. Dibangun untuk
-            masyarakat.
-          </p>
-        </div>
-      </footer>
-    </div>
+      <Footer />
+    </>
   );
 }

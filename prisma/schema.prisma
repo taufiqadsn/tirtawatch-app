@@ -16,15 +16,15 @@ datasource db {
 model User {
   id String @id @default(uuid())
   full_name String
-  email String
+  email String @unique
   password_hash String
   role ROLE @default(CITIZEN)
-  reports Report[]
+  reports Laporan[]
   created_at DateTime @default(now())
   status_histories StatusHistory[]
 }
 
-model Report {
+model Laporan {
   id String @id @default(uuid())
   reporter_id String
   category_id Int
@@ -50,7 +50,7 @@ model StatusHistory {
   proof_photo_url String?
   created_at      DateTime @default(now())
 
-  report          Report   @relation(fields: [report_id], references: [id])
+  laporan          Laporan   @relation(fields: [report_id], references: [id])
   technician      User     @relation(fields: [changed_by], references: [id])
 }
 
