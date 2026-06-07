@@ -258,7 +258,7 @@ function HowItWorks() {
   );
 }
 
-function UserIcon({ img, name }) {
+function UserIcon({ img, name }: { img: string; name: string }) {
   return (
     <div className="flex h-[86px] w-[86px] shrink-0 overflow-hidden rounded-full border border-black sm:h-[102px] sm:w-[102px]">
       <img src={img} alt={name} className="h-full w-full object-cover" />
@@ -389,7 +389,7 @@ export default function LandingPage() {
               <div className="mt-12 flex flex-wrap gap-10 text-sky-50 lg:gap-12">
                 <div>
                   <div className="text-[50px] font-bold ...">
-                    <AnimatedCounter target={1284} />
+                    <AnimatedCounter target={1284} duration={1000} />
                   </div>
                   <p className="mt-3 text-lg font-bold leading-[26px]">
                     Laporan masalah
@@ -398,7 +398,7 @@ export default function LandingPage() {
 
                 <div>
                   <div className="text-[50px] font-bold ...">
-                    <AnimatedCounter target={892} />
+                    <AnimatedCounter target={892} duration={1000} />
                   </div>
                   <p className="mt-3 text-lg font-bold leading-[26px]">
                     Sudah selesai
@@ -407,7 +407,7 @@ export default function LandingPage() {
 
                 <div>
                   <div className="text-[50px] font-bold ...">
-                    <AnimatedCounter target={72} />%
+                    <AnimatedCounter target={72} duration={1000} />%
                   </div>
                   <p className="mt-3 text-lg font-bold leading-[26px]">
                     tingkat resolusi
