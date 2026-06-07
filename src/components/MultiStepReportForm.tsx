@@ -65,7 +65,11 @@ export default function MultiStepReportForm() {
       });
     } catch (error) {
       console.error("Upload error:", error);
-      alert(error.message); // Atau tampilkan di state error message Anda
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert("Terjadi kesalahan yang tidak diketahui.");
+      }
     } finally {
       setIsUploading(false);
     }
